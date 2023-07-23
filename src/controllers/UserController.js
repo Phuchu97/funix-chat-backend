@@ -59,14 +59,18 @@ class UserController {
         }
     }
 
-    async editUser(req, res) {
-        // try {
-        //     const listUser = await User.find({});
-        //     res.json({message: 'Get List User Successfully!', data: listUser, statusCode: 200});
-        // }
-        // catch (e) {
-        //     res.status(422).json(e)
-        // }
+    async editImageUser(req, res) {
+        try {
+            const { user,url } = req.body;
+            await User.updateOne({_id: user. _id}, {
+                ...user,
+                file: url
+            })
+            res.json({message: 'Edit image User Successfully!', statusCode: 200});
+        }
+        catch (e) {
+            res.status(422).json(e)
+        }
     }
 
     async getUserDetail(req, res) {
