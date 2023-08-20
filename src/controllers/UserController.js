@@ -37,7 +37,6 @@ class UserController {
       }
       const salt = await bcrypt.genSalt(6);
       const randomhash = await bcrypt.hash(randomstring, salt);
-      console.log(randomhash);
       const newUser = await User.create({
         username: username,
         password: randomhash,
@@ -88,34 +87,36 @@ class UserController {
 
   async resetPassword(req, res) {
     try {
-      const { email, password, id } = req.body;
-      console.log({ email }, { password }, { id });
+      const { password_old, user_id, new_password } = req.body;
+      const getUser = await User.findOne({ _id: user_id });
       const salt = await bcrypt.genSalt(6);
-      const newPassword = await bcrypt.hash(password, salt);
+      const checkPassword = await bcrypt.compare(password_old, getUser.password);
+      if (!checkPassword) return res.json({ message: "Mật khẩu cũ không chính xác!", statusCode: 500 });
+      const newPassword = await bcrypt.hash(new_password, salt);
       const newData = {
         password: newPassword,
       };
-      await User.findByIdAndUpdate({ _id: id }, newData, { new: true });
+      await User.findByIdAndUpdate({ _id: user_id }, newData, { new: true });
       res.json({
-        message: "Add User Successfully!",
+        message: "Reset password successfully!",
         statusCode: 200,
       });
     } catch (e) {
-      res.status(422).json(e);
+      res.status(422).json({ message: "Có lỗi trong quá trình xử lý!", statusCode: 500 });
     }
   }
 
   async editImageUser(req, res) {
     try {
-        const { user,url } = req.body;
-        await User.updateOne({_id: user. _id}, {
-            ...user,
-            file: url
-        })
-        res.json({message: 'Edit image User Successfully!', statusCode: 200});
+      const { user, url } = req.body;
+      await User.updateOne({ _id: user._id }, {
+        ...user,
+        file: url
+      })
+      res.json({ message: 'Edit image User Successfully!', statusCode: 200 });
     }
     catch (e) {
-        res.status(422).json(e)
+      res.status(422).json(e)
     }
   }
 

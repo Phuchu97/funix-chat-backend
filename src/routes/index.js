@@ -35,6 +35,12 @@ function route(app) {
     userController.getUserDetail
   );
 
+  app.post(
+    "/user-reset-password",
+    AuthMiddleware.authLoginNoRole,
+    userController.resetPassword
+  );
+
   // Courses
   app.get(
     "/get-list-course",

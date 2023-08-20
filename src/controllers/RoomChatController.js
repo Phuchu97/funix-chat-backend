@@ -8,8 +8,7 @@ class RoomChatController {
     async addRoomChat(data, io) {
         const room = await RoomChatModel.findOne({ _id: data.roomId });
         if (room.users.length > 1) {
-            io.emit("quantity-room-chat-full");
-
+            io.emit(`quantity-room-chat-full/${data.mentor_id}`);
             return;
         }
         await RoomChatModel.updateOne(
@@ -18,9 +17,9 @@ class RoomChatController {
                 users: [...room.users, data.mentor_id],
             }
         );
-
         io.emit(`join-room-chat-success/${data.mentor_id}`, data);
         io.emit(`mentor-in-room-chat/${data.roomId}`);
+
     }
 
     async sendMessage(data, io) {
